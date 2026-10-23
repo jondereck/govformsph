@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Govforms</title>
+    <meta name="description" content="Offline personal data sheet. CS Form No. 212 stays on this device." />
+    <meta name="theme-color" content="#0040E7" />
+    
+    <!-- PWA Icons & Meta -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Govforms" />
+
+    <!-- Early BeforeInstallPrompt Capturing -->
+    <script>
+      window.deferredInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.deferredInstallPrompt = e;
+        window.dispatchEvent(new CustomEvent('pwa-prompt-available'));
+      });
+      window.addEventListener('appinstalled', function() {
+        window.deferredInstallPrompt = null;
+        window.dispatchEvent(new CustomEvent('pwa-app-installed'));
+      });
+    </script>
+    
+    <!-- Open Graph / Facebook / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Govforms" />
+    <meta property="og:title" content="Govforms" />
+    <meta property="og:description" content="Offline personal data sheet. CS Form No. 212 stays on this device." />
+    <meta property="og:locale" content="en_PH" />
+
+    <!-- X (Twitter) Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Govforms" />
+    <meta name="twitter:description" content="Offline personal data sheet. CS Form No. 212 stays on this device." />
+    
+    <!-- Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Lexend:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body class="min-h-screen bg-background-light font-sans text-ink antialiased selection:bg-teal-500 selection:text-white dark:bg-background-dark dark:text-slate-100">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

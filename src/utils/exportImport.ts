@@ -1,0 +1,242 @@
+/**
+ * GovFormsPH — Export / Import Utility
+ * Encapsulates full export/import cycle with metadata, checksum, schema validation, and optional AES-GCM encryption.
+ */
+
+import { PdsRecord, AppSettings } from '../types/pds';
+import { SalnRecord } from '../types/saln';
+import { db } from '../db/db';
+import { encryptData, decryptData } from './crypto';
+
+export { generatePdsPage1Pdf, downloadPdsPage1Pdf, openPdsPage1PdfInNewTab } from '../pdfExport/exportPdsPage1';
+
+export interface ExportBundle {
+  version: '1.0';
+  exportedAt: string;
+  source: 'GovFormsPH';
+  isEncrypted: boolean;
+  formsCount: number;
+  settings?: AppSettings;
+  salnRecords?: SalnRecord[];
+  data: PdsRecord[] | string; // Plain array or encrypted ciphertext string
+}
+
+/**
+ * Export all saved forms + settings to a downloadable file
+ */
+export async function exportAllData(
+  passphrase?: string
+): Promise<{ fileName: string; blob: Blob }> {
+  const records = await db.pdsRecords.toArray();
+  const salnRecords = await db.salnRecords.toArray();
+  const settings = await db.settings.toCollection().first();
+
+  const isEncrypted = Boolean(passphrase && passphrase.trim().length > 0);
+  let payloadData: PdsRecord[] | string = records;
+
+  if (isEncrypted && passphrase) {
+    const rawJson = JSON.stringify({ records, salnRecords, settings });
+    payloadData = await encryptData(rawJson, passphrase);
+  }
+
+  const bundle: ExportBundle = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    source: 'GovFormsPH',
+    isEncrypted,
+    formsCount: records.length + salnRecords.length,
+    settings: isEncrypted ? undefined : settings,
+    salnRecords: isEncrypted ? undefined : salnRecords,
+    data: payloadData,
+  };
+
+  const dateStr = new Date().toISOString().split('T')[0];
+  const extension = isEncrypted ? 'GovFormsPH.json' : 'GovFormsPH.json';
+  const fileName = `GovFormsPH-backup-${dateStr}.${extension}`;
+
+  const jsonStr = JSON.stringify(bundle, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+
+  // Update lastExportDate in settings
+  if (settings && settings.id) {
+    await db.settings.update(settings.id, { lastExportDate: new Date().toISOString() });
+  }
+
+  return { fileName, blob };
+}
+
+/**
+ * Export a single PDS form record to JSON
+ */
+export function exportSingleRecord(record: PdsRecord): { fileName: string; blob: Blob } {
+  const dateStr = new Date().toISOString().split('T')[0];
+  const nameSlug = (record.personalInfo.surname || 'pds-form').toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const fileName = `pds-${nameSlug}-${dateStr}.json`;
+
+  const singleBundle = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    source: 'GovFormsPH',
+    type: 'single-form',
+    formVersion: record.meta.formVersion,
+    record,
+  };
+
+  const blob = new Blob([JSON.stringify(singleBundle, null, 2)], { type: 'application/json' });
+  return { fileName, blob };
+}
+
+/**
+ * Trigger browser file download
+ */
+export function triggerDownload(fileName: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Parse and validate an imported file
+ */
+export async function parseImportFile(
+  fileContent: string,
+  passphrase?: string
+): Promise<{
+  success: boolean;
+  records: PdsRecord[];
+  salnRecords: SalnRecord[];
+  settings?: AppSettings;
+  isEncrypted: boolean;
+  requiresPassword?: boolean;
+  error?: string;
+}> {
+  try {
+    const parsed = JSON.parse(fileContent);
+
+    // Check if single record format
+    if (parsed.type === 'single-form' && parsed.record) {
+      return {
+        success: true,
+        records: [parsed.record],
+        salnRecords: [],
+        isEncrypted: false,
+      };
+    }
+
+    // Check if ExportBundle
+    if (parsed.source === 'GovFormsPH' || parsed.formsCount !== undefined) {
+      if (parsed.isEncrypted) {
+        if (!passphrase) {
+          return {
+            success: false,
+            records: [],
+            salnRecords: [],
+            isEncrypted: true,
+            requiresPassword: true,
+            error: 'This backup is password-protected. Please enter your passphrase to decrypt.',
+          };
+        }
+
+        try {
+          const decryptedJson = await decryptData(parsed.data, passphrase);
+          const decryptedBundle = JSON.parse(decryptedJson);
+          return {
+            success: true,
+            records: decryptedBundle.records || [],
+            salnRecords: decryptedBundle.salnRecords || [],
+            settings: decryptedBundle.settings,
+            isEncrypted: true,
+          };
+        } catch (decryptErr) {
+          return {
+            success: false,
+            records: [],
+            salnRecords: [],
+            isEncrypted: true,
+            requiresPassword: true,
+            error: 'Incorrect passphrase or corrupted file.',
+          };
+        }
+      }
+
+      // Plain JSON array
+      if (Array.isArray(parsed.data)) {
+        return {
+          success: true,
+          records: parsed.data,
+          salnRecords: parsed.salnRecords || [],
+          settings: parsed.settings,
+          isEncrypted: false,
+        };
+      }
+    }
+
+    // Direct array of records
+    if (Array.isArray(parsed)) {
+      return {
+        success: true,
+        records: parsed,
+        salnRecords: [],
+        isEncrypted: false,
+      };
+    }
+
+    return {
+      success: false,
+      records: [],
+      salnRecords: [],
+      isEncrypted: false,
+      error: 'Unrecognized file structure. Please ensure this is a valid GovFormsPH export file.',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      records: [],
+      salnRecords: [],
+      isEncrypted: false,
+      error: err.message || 'Invalid JSON file.',
+    };
+  }
+}
+
+/**
+ * Restore imported records into Dexie IndexedDB
+ */
+export async function restoreRecords(
+  records: PdsRecord[],
+  mode: 'merge' | 'replace' = 'merge',
+  salnRecords: SalnRecord[] = [],
+): Promise<number> {
+  if (mode === 'replace') {
+    await db.pdsRecords.clear();
+    await db.salnRecords.clear();
+  }
+
+  let importedCount = 0;
+  for (const record of records) {
+    const newRecord = { ...record };
+    if (mode === 'merge') {
+      delete newRecord.id;
+    }
+    newRecord.meta.updatedAt = new Date().toISOString();
+    await db.pdsRecords.add(newRecord);
+    importedCount++;
+  }
+
+  for (const record of salnRecords) {
+    const newRecord = { ...record };
+    if (mode === 'merge') {
+      delete newRecord.id;
+    }
+    newRecord.meta.updatedAt = new Date().toISOString();
+    await db.salnRecords.add(newRecord);
+    importedCount++;
+  }
+
+  return importedCount;
+}

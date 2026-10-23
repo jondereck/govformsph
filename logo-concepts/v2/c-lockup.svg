@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 256" width="980" height="256" role="img" aria-labelledby="title">
+  <title id="title">GovFormsPH Sheets lockup</title>
+  <svg x="8" y="16" width="224" height="224" viewBox="0 0 256 256">
+    <rect x="48" y="72" width="132" height="148" rx="22" fill="#CE1126"/>
+    <rect x="76" y="40" width="132" height="148" rx="22" fill="#0038A8"/>
+    <rect x="100" y="78" width="84" height="16" rx="8" fill="#FCD116"/>
+    <rect x="100" y="106" width="84" height="16" rx="8" fill="#FFFFFF"/>
+    <rect x="100" y="134" width="52" height="16" rx="8" fill="#FCD116"/>
+  </svg>
+  <text x="260" y="148" fill="#0038A8" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="650">GovFormsPH</text>
+  <rect x="262" y="168" width="168" height="10" rx="5" fill="#FCD116"/>
+  <rect x="438" y="168" width="36" height="10" rx="5" fill="#CE1126"/>
+</svg>

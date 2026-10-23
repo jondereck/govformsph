@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 256" width="844" height="256" role="img" aria-labelledby="title">
+  <title id="title">Govforms Rule wordmark</title>
+  <path fill="#111111" fill-rule="evenodd" d="M 128 70 A 68 68 0 1 0 128 178 L 110 160 A 44 44 0 1 1 110 88 Z M 70 108 H 152 V 136 H 70 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 182 104 H 232 A 14 14 0 0 1 246 118 V 186 A 14 14 0 0 1 232 200 H 182 A 14 14 0 0 1 168 186 V 118 A 14 14 0 0 1 182 104 Z M 192 126 H 222 A 2 2 0 0 1 224 128 V 176 A 2 2 0 0 1 222 178 H 192 A 2 2 0 0 1 190 176 V 128 A 2 2 0 0 1 192 126 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 262 104 H 286 L 308 172 L 330 104 H 356 L 320 200 H 298 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 372 30 H 420 V 56 H 398 V 200 H 372 Z M 372 114 H 432 V 140 H 372 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 462 104 H 512 A 14 14 0 0 1 526 118 V 186 A 14 14 0 0 1 512 200 H 462 A 14 14 0 0 1 448 186 V 118 A 14 14 0 0 1 462 104 Z M 472 126 H 502 A 2 2 0 0 1 504 128 V 176 A 2 2 0 0 1 502 178 H 472 A 2 2 0 0 1 470 176 V 128 A 2 2 0 0 1 472 126 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 542 104 H 568 V 200 H 542 Z M 542 104 H 600 V 130 H 542 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 616 104 H 642 V 200 H 616 Z M 662 104 H 688 V 200 H 662 Z M 708 104 H 734 V 200 H 708 Z M 616 104 H 688 V 130 H 616 Z M 662 104 H 734 V 130 H 662 Z"/>
+    <path fill="#111111" fill-rule="evenodd" d="M 768 104 H 820 V 130 H 790 L 820 174 V 200 H 758 V 174 H 790 L 768 104 Z"/>
+</svg>

@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.7);
+  }
+}
+
+/* ================= PRINT STYLES ================= */
+@media print {
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
+
+  body > *:not(#pds-print-portal):not(#wes-print-portal):not(#saln-print-portal) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  #pds-print-portal,
+  #wes-print-portal,
+  #saln-print-portal {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+  }
+  /* Flatten the fixed overlay wrappers inside portals so full content prints */
+  #pds-print-portal > div,
+  #wes-print-portal > div,
+  #saln-print-portal > div {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: auto !important;
+    background: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+
+  /* Reset print container to span printable page without screen padding/shadows */
+  #pds-print-area,
+  #wes-print-area,
+  #saln-print-area {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* ---- Body reset ---- */
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 9pt !important;
+    line-height: 1.25 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ---- Page breaks & Page containers ---- */
+  .pds-page {
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .pds-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* WES entry row-group avoid awkward break */
+  .wes-entry-group,
+  .wes-entry-group > td {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* ---- Table borders ---- */
+  #pds-print-portal table,
+  #wes-print-portal table,
+  #saln-print-portal table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  #pds-print-portal th,
+  #pds-print-portal td,
+  #wes-print-portal th,
+  #wes-print-portal td,
+  #saln-print-portal th,
+  #saln-print-portal td {
+    border: 1px solid #000000 !important;
+  }
+
+  /* ---- Hide web-only controls inside the print area ---- */
+  .pds-print-controls,
+  .wes-print-controls,
+  .saln-print-controls {
+    display: none !important;
+  }
+}

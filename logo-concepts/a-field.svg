@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="title">
+  <title id="title">Govforms Field symbol</title>
+  <path fill="#111111" d="M188 72A84 84 0 1 0 188 184L162 162A52 52 0 1 1 162 94Z"/>
+  <path fill="#111111" d="M116 114H198V156H160V176H116Z"/>
+</svg>
