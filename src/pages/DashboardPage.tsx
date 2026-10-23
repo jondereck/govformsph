@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Clock,
 } from "lucide-react";
+import { HeroNetwork } from "../components/brand/HeroNetwork";
 
 interface DashboardPageProps {
   onSelectRecord: (record: PdsRecord) => void;
@@ -141,7 +142,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           alt=""
           className="hidden h-auto w-full lg:block"
         />
-        <div className="flex flex-col justify-center px-5 py-6 sm:px-8 sm:py-8 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[34%] lg:px-8 lg:py-6">
+        <HeroNetwork />
+        <div className="relative z-[2] flex flex-col justify-center px-5 py-6 sm:px-8 sm:py-8 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[34%] lg:px-8 lg:py-6">
             <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#C5D4F5] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#0040E7]">
               <ShieldCheck className="h-3.5 w-3.5" /> 100% Offline & Private
             </div>
